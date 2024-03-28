@@ -6,6 +6,11 @@ A BASH script designed to work with the Alma Linux ELevate tool to upgrade CentO
 Alma Linux ELevate documentation can be found [here](https://almalinux.org/elevate/) <br>
 Yes, it's formatted as ELevate. <br>
 
+**IMPORTANT** <br>
+This script should be considered the _basis_ for it's own work effort and not a complete script in and of itself. <br>
+It may be possible to run the script as is and successfully upgrade a server to Rocky 8, but there will likely need to be additional adjustments. <br>
+No warranties, ymmv. <br>
+
 ## Usage
 * **elevateHelper.sh**, a BASH script for upgrading CentOS 7 to Rocky 8.
   Runs in three parts, a prep stage, upgrade stage and post-upgrade stage. Stages are elaborated on further below.
