@@ -30,7 +30,7 @@ Script upgrades servers in three parts, below is a breakdown of what's approxima
 * **Prep**, Prepare the server for upgrading. This stage is the most complicated and most likely to require manual intervention.
   Prep stage updates server, checks for duplicate packages, installs ELevate, runs pre-upgrade check, makes OS-level changes as documented from ELevate tests, and edits repo URLs from CentOS 7 to Rocky 8. <br>
   Yum needs to be functional and the script will exit if yum fails at any point. <br>
-  This includes any chattr'd yum files, the script will error out if any are found. <br>
+  This includes any chattr'd (immutable) yum files, the script will error out if any are found. <br>
   As part of last step script will re-check if server is ready for **Upgrade** stage detailed below. <br>
   If anything not encountered during testing is listed during this final check, it will require manual intervention. <br>
   Script will prompt user if anything is found and will list the file to check and snippets of the error message. <br>
