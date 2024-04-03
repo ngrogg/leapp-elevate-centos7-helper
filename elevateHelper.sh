@@ -81,7 +81,8 @@ function runPrep(){
 	"1. In screen session" \
 	"2. Snapshots taken first" \
 	"3. Running script as root" \
-    "4. At least 10 GB of disk space is available" \
+    "4. Server rebooted to ensure newest kernel in use"\
+    "5. At least 10 GB of disk space is available" \
     " " \
 	"If all clear, press enter to proceed or ctrl-c to cancel${normal}" \
 	" "
@@ -119,6 +120,30 @@ function runPrep(){
         "Proceeding${normal}"
     fi
 
+	printf "%s\n" \
+    "Checking if currently loaded kernel is newest kernel" \
+	"----------------------------------------------------" \
+    " "
+
+    ## Check if running kernel matches newest installed kernel
+    newestKernel=`find /boot/vmlinuz-* | sort -V | tail -n 1 | sed 's|.*vmlinuz-||'`
+    runningKernel=`uname -r`
+    if [ "$newestKernel" != "$runningKernel" ]; then
+        printf "%s\n" \
+		"${red}ISSUE DETECTED - Newest kernel not loaded!" \
+		"----------------------------------------------------" \
+        "Currently loaded Kernel: " "$runningKernel" \
+        "Newest installed Kernel: " "$newestKernel" \
+        "Reboot server to load newest installed kernel" \
+        "After reboot re-run script ${normal}"
+        exit 1
+    else
+        printf "%s\n" \
+		"${green}Newest Installed Kernel running" \
+        "----------------------------------------------------" \
+        "Proceeding${normal}"
+    fi
+
 	## Update server
 	yum update -y
 
@@ -131,7 +156,6 @@ function runPrep(){
 		"Re-run script once review complete!${normal}"
 		lsattr /etc/yum.conf | grep "\-i\-"
 		lsattr /etc/yum.repos.d/* | grep "\-i\-"
-
 		exit 1
 	else
 		printf "%s\n" \
