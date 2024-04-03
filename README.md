@@ -34,6 +34,10 @@ Script upgrades servers in three parts, below is a breakdown of what's approxima
   As part of last step script will re-check if server is ready for **Upgrade** stage detailed below. <br>
   If anything not encountered during testing is listed during this final check, it will require manual intervention. <br>
   Script will prompt user if anything is found and will list the file to check and snippets of the error message. <br>
+  The following are checked as part of the prep function: <br>
+  - Is the script being run as root?
+  - Is there enough disk space (10 GB) available?
+  - Is the currently loaded kernel the newest of the available installed kernels being run?
 * **Upgrade**, The most straightforward stage. Upgrades server from CentOS 7 to Rocky 8 using ELevate commands. <br>
   For best results, run in screen session as process takes a while. Upgrade stage will reboot server when complete. <br>
   Only issue I've run into during tests *so far* is not enough disk space being available. <br>
