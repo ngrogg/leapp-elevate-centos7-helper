@@ -102,8 +102,12 @@ function runPrep(){
     ### Get available disk space
     availableSpace=$(df / -h | awk 'NR==2 {print $4}' | rev | cut -c2- | rev)
 
+    #### Parse out space type (Should be G or T)
+    spaceType=$(df / -h | awk 'NR==2 {print $4}' | sed -E 's/.*(.)/\1/')
+
     ### If available disk space < size constraint, exit w/ error
-    if [[ $(bc <<< "$availableSpace < $requiredSpace") == "1" ]]; then
+    if [[ $(bc <<< "$availableSpace < $requiredSpace") == "1" && "$spaceType" == "G" ]]; then
+
         printf "%s\n" \
         "${red}ISSUE DETECTED - INSUFFICIENT DISK SPACE!" \
         "----------------------------------------------------" \
@@ -147,6 +151,21 @@ function runPrep(){
 	## Update server
 	yum update -y
 
+   	## Were yum updates applied successfully? Were there any errors?
+	if [[ $? != 0 ]]; then
+		printf "%s\n" \
+		"${red}ISSUE DETECTED - YUM RETURNED NON-0 VALUE!" \
+		"----------------------------------------------------" \
+        "Review any errors detailed above, exiting!${normal}"
+		exit 1
+
+	else
+		printf "%s\n" \
+		"${green}Yum Updates Applied" \
+		"----------------------------------------------------" \
+		"Proceeding${normal}"
+	fi
+
 	## Check for chattr'd files
 	if [[ $(lsattr /etc/yum.conf | grep "\-i\-") || $(lsattr /etc/yum.repos.d/* | grep "\-i\-") ]]; then
 		printf "%s\n" \
@@ -164,36 +183,21 @@ function runPrep(){
 		"Proceeding${normal}"
 	fi
 
-	## Were yum updates applied successfully? Were there any errors?
-	if [[ $? = 0 ]]; then
-		printf "%s\n" \
-		"${green}Yum Updates Applied" \
-		"----------------------------------------------------" \
-		"Proceeding${normal}"
+	## Check for duplicate packages, remove it found
+	package-cleanup --cleandupes -y
 
-	else
+  	## Were dupes (if any) cleared? Were there any errors?
+	if [[ $? != 0 ]]; then
 		printf "%s\n" \
 		"${red}ISSUE DETECTED - YUM RETURNED NON-0 VALUE!" \
 		"----------------------------------------------------" \
         "Review any errors detailed above, exiting!${normal}"
 		exit 1
-	fi
-
-	## Check for duplicate packages, remove it found
-	package-cleanup --cleandupes -y
-
-	## Were dupes (if any) cleared? Were there any errors?
-	if [[ $? = 0 ]]; then
+	else
 		printf "%s\n" \
 		"${green}Duplicate Packages (if any) Removed " \
 		"----------------------------------------------------" \
 		"Proceeding${normal}"
-	else
-		printf "%s\n" \
-		"${red}ISSUE DETECTED - YUM RETURNED NON-0 VALUE!" \
-		"----------------------------------------------------" \
-        "Review any errors detailed above, exiting!${normal}"
-		exit 1
 	fi
 
     ### Check for NFS
@@ -204,16 +208,50 @@ function runPrep(){
 
     ### If NFS installed and mounts are found, throw error
     if [[ $(yum list installed | grep nfs-utils) && $(mount -l | grep nfsd) ]]; then
-        printf "%s\n" \
-        "${red}ISSUE DETECTED - NFS detected on server!"\
-        "----------------------------------------------------" \
-        "ELevate is not compatible with NFS mounts!${normal}" \
-        " " \
-        "Paths forward: " \
-        "* If NFS not in use, remove packages and re-run script " \
-        "* Provision new server, migrate manually"
+            printf "%s\n" \
+            "${red}ISSUE DETECTED - NFS detected on server!"\
+            "----------------------------------------------------" \
+            "ELevate is not compatible with NFS mounts!${normal}" \
+            " " \
+            "Paths forward: " \
+            "* If NFS not in use, remove packages and re-run script " \
+            "* Otherwise provision a new server and migrate manually" \
+            " "
 
-        exit 1
+            printf "%s\n" \
+            "Below are the detected NFS packages " \
+            " "
+            yum list installed | grep nfs-utils
+
+            printf "%s\n" \
+            "Below are the detected NFS mounts " \
+            " "
+            mount -l | grep nfsd
+
+            exit 1
+
+    ### Check fstab for NFS as well
+    elif [[ $(grep nfs /etc/fstab) ]]; then
+            printf "%s\n" \
+            "${red}ISSUE DETECTED - NFS detected on server!"\
+            "----------------------------------------------------" \
+            "ELevate is not compatible with NFS mounts!${normal}" \
+            " " \
+            "Paths forward: " \
+            "* If NFS not in use, remove entry and re-run script " \
+            "* Otherwise provision a new server and migrate manually" \
+            " " \
+            "The following NFS mount was found in /etc/fstab " \
+            " "
+            grep nfs /etc/fstab
+
+            exit 1
+    ### Otherwise clear
+    else
+            printf "%s\n" \
+            "${green}NFS not detected"\
+            "----------------------------------------------------" \
+            "Proceeding${normal}"
     fi
 
 	## Install ELevate repo and leapp tool
@@ -333,7 +371,7 @@ function runPrep(){
 	"${yellow}IMPORTANT: Check for any repo errors "\
 	"----------------------------------------------------" \
 	"Check for error messages in repo section above " \
-	"If any errors are seen, review manually " \
+	"If any errors seen, open a new session and review" \
     "Press Enter when ready to proceed${normal}"
 	read junkInput
 
@@ -383,7 +421,7 @@ function runUpgrade(){
     normal=$(tput sgr0)
 
     # ELevate runs in a container, adjust this size as needed for your own server configurations
-    export LEAPP_OVL_SIZE=8192
+    export LEAPP_OVL_SIZE=10240
 
 	printf "%s\n" \
 	"Upgrade" \
@@ -428,11 +466,12 @@ function runUpgrade(){
 	echo "" > /var/log/leapp/leapp-upgrade.log
 
 	#### Run upgrade function
-	sudo leapp upgrade
+	leapp upgrade
 
-	### Check for error messages
-	if [[ $(grep "Error Summary" /var/log/leapp/leapp-upgrade.log) ]]; then
-		#### Generic error message
+  	### Check for error messages in upgrade log
+    if [[ $(grep "Error Summary" /var/log/leapp/leapp-upgrade.log) || $(grep "ERRORS" /var/log/leapp/leapp-upgrade.log | grep -v '/') ]]; then
+
+		#### Message that errors were found in the log
 		printf "%s\n" \
 		"${red}ISSUE DETECTED - Error in leapp-upgrade.log" \
 		"----------------------------------------------------" \
@@ -440,7 +479,9 @@ function runUpgrade(){
 		"Snippet of error listed below" \
 		"After resolving re-run script with upgrade function${normal}" \
 		" "
-		grep "Error Summary" /var/log/leapp/leapp-upgrade.log -C 5
+
+        #### Output error messages
+        grep -E "Error Summary|ERRORS" /var/log/leapp/leapp-upgrade.log -C 7
 
 		#### Error message for disk space
 		printf "%s\n" \
@@ -448,10 +489,11 @@ function runUpgrade(){
 		"${red}IMPORTANT" \
 		"----------------------------------------------------" \
 		"If error related to X MB needed on / filesystem" \
-		"Run the following: export LEAPP_OVL_SIZE=8192" \
-		"Then upgrade manually: leapp upgrade" \
-		"If check clear, reboot to complete upgrade" \
-		"If error persists, re-run export with larger value for LEAPP_OVL_SIZE${normal}"
+		"Run the following: export 'LEAPP_OVL_SIZE=11264'" \
+		"Then upgrade manually: 'leapp upgrade'" \
+		"If check clears, reboot to complete upgrade" \
+		"If error persists, re-run export with larger value for LEAPP_OVL_SIZE"\
+        "Be aware of available disk space before doing this!${normal}"
 
 		exit 1
 	fi
@@ -521,7 +563,7 @@ function runPost(){
     "Re-installing removed software"\
     "----------------------------------------------------" \
     " "
-    ### Enable PowerTools repo, needed for Nagios Perl dependency
+    ### Enable PowerTools repo, often needed for package dependencies
     sed -i 's/enabled=0/enabled=1/g' /etc/yum.repos.d/Rocky-PowerTools.repo
 
     ### Clean repos, check for updates, re-install removed packages
