@@ -36,18 +36,12 @@ function helpFunction(){
 	"post/Post" \
 	"* Run post-upgrade checks to ensure upgrade was successful" \
 	" " \
-	"Usage: ./elevateHelper.sh post SERVERTYPE SERVERTECH" \
+	"Usage: ./elevateHelper.sh post" \
 	" "
 }
 
 # Function to prep server
 function runPrep(){
-    ## Color variables
-    red=$(tput setaf 1)
-    green=$(tput setaf 2)
-    yellow=$(tput setaf 3)
-    normal=$(tput sgr0)
-
 	printf "%s\n" \
 	"Pre-Upgrade" \
 	"----------------------------------------------------"
@@ -414,12 +408,6 @@ function runPrep(){
 
 # Function to upgrade server
 function runUpgrade(){
-    ## Color variables
-    red=$(tput setaf 1)
-    green=$(tput setaf 2)
-    yellow=$(tput setaf 3)
-    normal=$(tput sgr0)
-
     # ELevate runs in a container, adjust this size as needed for your own server configurations
     export LEAPP_OVL_SIZE=10240
 
@@ -514,12 +502,6 @@ function runUpgrade(){
 
 # Function for post-upgrade
 function runPost(){
-    ## Color variables
-    red=$(tput setaf 1)
-    green=$(tput setaf 2)
-    yellow=$(tput setaf 3)
-    normal=$(tput sgr0)
-
 	printf "%s\n" \
 	"Post-Upgrade" \
 	"----------------------------------------------------"
