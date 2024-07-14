@@ -360,6 +360,11 @@ function runPrep(){
 	sed -i 's/7Server/8/g' epel.repo
 	sed -i 's/epel\/7/epel\/8/g' epel.repo
 
+    #### If present, remove centos-sclo-rh
+    if [[ -f CentOS-SCLo-scl-rh.repo ]]; then
+        yum remove devtoolset-7-* llvm-toolset-7-* centos-release-scl-rh -y
+    fi
+
 	#### Prompt user to check for errors
 	printf "%s\n" \
 	"${yellow}IMPORTANT: Check for any repo errors "\
@@ -408,6 +413,12 @@ function runPrep(){
 
 # Function to upgrade server
 function runUpgrade(){
+    ## Color variables
+    red=$(tput setaf 1)
+    green=$(tput setaf 2)
+    yellow=$(tput setaf 3)
+    normal=$(tput sgr0)
+
     # ELevate runs in a container, adjust this size as needed for your own server configurations
     export LEAPP_OVL_SIZE=10240
 
@@ -486,6 +497,26 @@ function runUpgrade(){
 		exit 1
 	fi
 
+    ### Check for inhibitor errors
+    if [[ $(grep inhibitor /var/log/leapp/leapp-report.txt -l) ]]; then
+        printf "%s\n" \
+        "${red}ISSUE DETECTED - Inhibitor level errors found "\
+        "----------------------------------------------------" \
+        "Review/resolve manually " \
+        "See /var/log/leapp/leapp-report.txt " \
+        "Run 'sudo leapp preupgrade' when complete to re-check " \
+        "Snippet of errors below for review${normal}" \
+        " "
+
+        grep inhibitor /var/log/leapp/leapp-report.txt -C 5
+
+        printf "%s\n" \
+        "${red}Once review complete run 'leapp preupgrade'"\
+        "If clear, run script with upgrade flags${normal}"
+
+        exit 1
+    fi
+
     ### Confirm server clear to upgrade
 	printf "%s\n" \
 	"${yellow}IMPORTANT: Upgrade checks complete" \
@@ -502,6 +533,12 @@ function runUpgrade(){
 
 # Function for post-upgrade
 function runPost(){
+    ## Color variables
+    red=$(tput setaf 1)
+    green=$(tput setaf 2)
+    yellow=$(tput setaf 3)
+    normal=$(tput sgr0)
+
 	printf "%s\n" \
 	"Post-Upgrade" \
 	"----------------------------------------------------"
@@ -590,6 +627,14 @@ function runPost(){
             "Press Enter when ready to proceed${normal}"
             read junkInput
     fi
+
+    ## Regenerate GRUB menu
+    printf "%s\n" \
+	"Regenerating GRUB menu"\
+	"----------------------------------------------------" \
+    " "
+
+    grub2-mkconfig -o /boot/grub2/grub.cfg
 
     printf "%s\n" \
     "${green}Final steps"\
