@@ -248,6 +248,37 @@ function runPrep(){
             "Proceeding${normal}"
     fi
 
+    ### Check for non-standard processes
+    printf "%s\n" \
+    "Checking for /opt and /home processes" \
+    "----------------------------------------------------" \
+    " "
+
+    ### Check for processes in /opt and /home folders. Update grep -v -E -i as needed
+    if [[ $(ps aux | grep -i -E "/opt|/home" | grep -v -E -i "grep|inotify|maldet") ]]; then
+        printf "%s\n" \
+        "${yellow}IMPORTANT: /opt or /home processes found "\
+        "----------------------------------------------------" \
+        "This can cause issues with upgrades! "
+        "Note the following processes below${normal}" \
+        " "
+
+        #### List processes running out of /home or /opt. Update grep -v -E -i as needed
+        ps aux | grep -i -E "/opt|/home" | grep -v -E -i "grep|inotify|maldet"
+
+        printf "%s\n" \
+        " " \
+        "${yellow}Press Enter when ready to proceed${normal}" \
+        " "
+        read junkInput
+    else
+        printf "%s\n" \
+        "${green}No /opt or /home processes found "\
+        "----------------------------------------------------" \
+        "Proceeding${normal}" \
+        " "
+    fi
+
 	## Install ELevate repo and leapp tool
 	sudo yum install -y http://repo.almalinux.org/elevate/elevate-release-latest-el$(rpm --eval %rhel).noarch.rpm
 	sudo yum install -y leapp-upgrade leapp-data-rocky
