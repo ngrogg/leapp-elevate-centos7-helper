@@ -2,6 +2,7 @@
 
 ## Overview
 A BASH script designed to work with the Alma Linux ELevate tool to upgrade CentOS 7 servers to Rocky 8. <br>
+A currently In-Progress version of Rocky 8 can be found [here](https://github.com/ngrogg/leapp-elevate-rocky8-helper). <br>
 
 Alma Linux ELevate documentation can be found [here](https://almalinux.org/elevate/) <br>
 Yes, it's formatted as ELevate. <br>

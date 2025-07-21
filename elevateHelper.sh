@@ -6,11 +6,14 @@
 # By Nicholas Grogg
 
 # Color variables
+## Errors
 red=$(tput setaf 1)
+## Clear checks
 green=$(tput setaf 2)
+## User input required
 yellow=$(tput setaf 3)
+## Set text back to standard terminal font
 normal=$(tput sgr0)
-
 
 # Help function
 function helpFunction(){
@@ -90,7 +93,8 @@ function runPrep(){
     "----------------------------------------------------" \
     " "
 
-    ### Default required disk space found during testing, may need adjusted depending on your server needs
+    #TODO If needed, adjust for server needs
+    ### Default required disk space found during testing
     requiredSpace=10
 
     ### Get available disk space
@@ -385,7 +389,7 @@ function runPrep(){
 	#### Navigate to yum repos folder
 	cd /etc/yum.repos.d
 
-	#### Adjust this section as needed for your own server configurations
+    #TODO Adjust for server configurations
 	#### Edit Repo URLs from C7 -> R8
 	sed -i 's/Linux 7/Linux 8/g' epel.repo
 	sed -i 's/7Server/8/g' epel.repo
@@ -450,7 +454,8 @@ function runUpgrade(){
     yellow=$(tput setaf 3)
     normal=$(tput sgr0)
 
-    # ELevate runs in a container, adjust this size as needed for your own server configurations
+    #TODO Adjust size as needed for own server configuration
+    # ELevate runs in a container, set container size
     export LEAPP_OVL_SIZE=10240
 
 	printf "%s\n" \
@@ -626,7 +631,8 @@ function runPost(){
     # Re-install removed packages from earlier
     yum install screen bash-completion -y
 
-    ### Remove/re-install el7 packages, adjust as needed for your own server configurations
+    #TODO: Adjust as needed for own servers
+    ### Remove/re-install el7 packages
     yum remove yum-plugin-fastest-mirror btrfs-progs elevate-release kernel leapp-data-rocky libunwind -y
     yum install kernel libunwind rsyslog -y
 
@@ -673,7 +679,7 @@ function runPost(){
     printf "%s\n" \
     "${green}Final steps"\
     "----------------------------------------------------" \
-    "Fill in your needs based on your server configurations ${normal}"
+    "Fill in based on server configuration needs${normal}"
 }
 
 # Main, read passed flags
