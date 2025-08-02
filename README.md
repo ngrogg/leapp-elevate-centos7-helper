@@ -1,8 +1,8 @@
-# Elevate Helper Version c72r8
+# Leapp Elevate Rocky 8 Helper - Version c72r8
 
 ## Overview
 A BASH script designed to work with the Alma Linux ELevate tool to upgrade CentOS 7 servers to Rocky 8. <br>
-A currently In-Progress version of Rocky 8 can be found [here](https://github.com/ngrogg/leapp-elevate-rocky8-helper). <br>
+A currently In-Progress version upgrading Rocky 8 can be found [here](https://github.com/ngrogg/leapp-elevate-rocky8-helper). <br>
 
 Alma Linux ELevate documentation can be found [here](https://almalinux.org/elevate/) <br>
 Yes, it's formatted as ELevate. <br>
@@ -10,7 +10,7 @@ Yes, it's formatted as ELevate. <br>
 **IMPORTANT** <br>
 This script should be considered the _basis_ for it's own work effort and not a complete script in and of itself. <br>
 It may be possible to run the script as is and successfully upgrade a server to Rocky 8, but there will likely need to be additional adjustments. <br>
-No warranties, ymmv. <br>
+Take a snapshot before using! No warranties, ymmv. <br>
 
 ## Usage
 * **elevateHelper.sh**, a BASH script for upgrading CentOS 7 to Rocky 8.
@@ -26,7 +26,7 @@ No warranties, ymmv. <br>
   Help, `./elevateHelper.sh help` <br>
   See **Arguments** section below for breakdown of acceptable arguments. <br>
 
-### Upgrade stages
+## Upgrade Stages
 Script upgrades servers in three parts, below is a breakdown of what's approximately done in each stage. <br>
 * **Prep**, Prepare the server for upgrading. This stage is the most complicated and most likely to require manual intervention.
   Prep stage updates server, checks for duplicate packages, installs ELevate, runs pre-upgrade check, makes OS-level changes as documented from ELevate tests, and edits repo URLs from CentOS 7 to Rocky 8. <br>
@@ -48,3 +48,7 @@ Script upgrades servers in three parts, below is a breakdown of what's approxima
   Re-install any software removed during prep stage, reconfigure any services and check for failed services. <br>
   Pretty straightforward, just follow the prompts. <br>
   One notable check is the script will check for any el7 packages not upgraded by ELevate.
+
+## Script
+To copy just the script onto a server: <br>
+`wget https://raw.githubusercontent.com/ngrogg/leapp-elevate-centos7-helper/refs/heads/main/elevateHelper.sh`
