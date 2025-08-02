@@ -1,4 +1,4 @@
-# Leapp Elevate Rocky 8 Helper - Version c72r8
+# Leapp Elevate CentOS 7 Helper - Version c72r8
 
 ## Overview
 A BASH script designed to work with the Alma Linux ELevate tool to upgrade CentOS 7 servers to Rocky 8. <br>
