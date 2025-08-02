@@ -448,12 +448,6 @@ function runPrep(){
 
 # Function to upgrade server
 function runUpgrade(){
-    ## Color variables
-    red=$(tput setaf 1)
-    green=$(tput setaf 2)
-    yellow=$(tput setaf 3)
-    normal=$(tput sgr0)
-
     #TODO Adjust size as needed for own server configuration
     # ELevate runs in a container, set container size
     export LEAPP_OVL_SIZE=10240
@@ -569,12 +563,6 @@ function runUpgrade(){
 
 # Function for post-upgrade
 function runPost(){
-    ## Color variables
-    red=$(tput setaf 1)
-    green=$(tput setaf 2)
-    yellow=$(tput setaf 3)
-    normal=$(tput sgr0)
-
     printf "%s\n" \
     "Post-Upgrade" \
     "----------------------------------------------------"
