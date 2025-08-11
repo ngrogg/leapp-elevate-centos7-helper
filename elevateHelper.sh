@@ -132,8 +132,8 @@ function runPrep(){
     runningKernel=`uname -r`
     if [ "$newestKernel" != "$runningKernel" ]; then
         printf "%s\n" \
-    "${red}ISSUE DETECTED - Newest kernel not loaded!" \
-    "----------------------------------------------------" \
+        "${red}ISSUE DETECTED - Newest kernel not loaded!" \
+        "----------------------------------------------------" \
         "Currently loaded Kernel: " "$runningKernel" \
         "Newest installed Kernel: " "$newestKernel" \
         "Reboot server to load newest installed kernel" \
@@ -189,7 +189,7 @@ function runPrep(){
         printf "%s\n" \
         "${red}ISSUE DETECTED - YUM RETURNED NON-0 VALUE!" \
         "----------------------------------------------------" \
-                "Review any errors detailed above, exiting!${normal}"
+        "Review any errors detailed above, exiting!${normal}"
         exit 1
     else
         printf "%s\n" \
