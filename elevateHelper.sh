@@ -93,8 +93,7 @@ function runPrep(){
     "----------------------------------------------------" \
     " "
 
-    #TODO If needed, adjust for server needs
-    ### Default required disk space found during testing
+    ### Default required disk space found during testing, adjust as needed.
     requiredSpace=10
 
     ### Get available disk space
@@ -389,8 +388,7 @@ function runPrep(){
     #### Navigate to yum repos folder
     cd /etc/yum.repos.d
 
-    #TODO Adjust for server configurations
-    #### Edit Repo URLs from C7 -> R8
+    #### Edit Repo URLs from C7 -> R8, adjust as needed for server
     sed -i 's/Linux 7/Linux 8/g' epel.repo
     sed -i 's/7Server/8/g' epel.repo
     sed -i 's/epel\/7/epel\/8/g' epel.repo
@@ -448,8 +446,8 @@ function runPrep(){
 
 # Function to upgrade server
 function runUpgrade(){
-    #TODO Adjust size as needed for own server configuration
     # ELevate runs in a container, set container size
+    ## 10 GB was the size found in testing, adjust as needed
     export LEAPP_OVL_SIZE=10240
 
     printf "%s\n" \
@@ -618,8 +616,7 @@ function runPost(){
     # Re-install removed packages from earlier
     yum install screen bash-completion -y
 
-    #TODO: Adjust as needed for own servers
-    ### Remove/re-install el7 packages
+    ### Remove/re-install el7 packages, adjust as needed
     yum remove yum-plugin-fastest-mirror btrfs-progs elevate-release kernel leapp-data-rocky libunwind -y
     yum install kernel libunwind rsyslog -y
 
