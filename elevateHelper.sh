@@ -128,9 +128,9 @@ function runPrep(){
     " "
 
     ## Check if running kernel matches newest installed kernel
-    newestKernel=`find /boot/vmlinuz-* | sort -V | tail -n 1 | sed 's|.*vmlinuz-||'`
-    runningKernel=`uname -r`
-    if [ "$newestKernel" != "$runningKernel" ]; then
+    newestKernel=$(find /boot/vmlinuz-* | sort -V | tail -n 1 | sed 's|.*vmlinuz-||')
+    runningKernel=$(uname -r)
+    if [[ "$newestKernel" != "$runningKernel" ]]; then
         printf "%s\n" \
         "${red}ISSUE DETECTED - Newest kernel not loaded!" \
         "----------------------------------------------------" \
