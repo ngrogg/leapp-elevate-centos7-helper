@@ -13,6 +13,14 @@ This script should be considered the _basis_ for it's own work effort and not a 
 It may be possible to run the script as is and successfully upgrade a server to Rocky 8, but there will likely need to be additional adjustments. <br>
 Take a snapshot before using! No warranties, ymmv. <br>
 
+## Disclaimer
+As of `12-18-2025` Rocky Linux is no longer supported by ELevate as confirmed in their FAQ [here](https://almalinux.org/elevate/). <br>
+This is also covered in a blog post linked [here](https://almalinux.org/blog/2025-12-18-elevate-updates/).
+
+As such, this script will be deprecated and marked as read only.
+
+The still active Rocky 8 to Rocky 9 script will be refactored to upgrade to Alma 9 as testing and time allows.
+
 ## Usage
 * **elevateHelper.sh**, a BASH script for upgrading CentOS 7 to Rocky 8.
   Script runs in three parts, a prep stage, upgrade stage and post-upgrade stage. Stages are elaborated on further below.
